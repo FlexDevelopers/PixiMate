@@ -14,7 +14,7 @@ bot.onText(/\/start/, async (msg) => {
     
     if (member.status === 'member' || member.status === 'administrator' || member.status === 'creator') {
         // User is a member of the channel
-        const photoPath = 'path_to_your_image.png'; // Update with your image path
+        const photoPath = 'src/fotobot_logo.jpg';
 
         // Send an image with caption and buttons
         bot.sendPhoto(chatId, photoPath, {
