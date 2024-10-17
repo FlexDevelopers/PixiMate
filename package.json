@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "dotenv": "^16.0.0",
-    "node-telegram-bot-api": "^0.57.0"
+    "node-telegram-bot-api": "^0.57.0",
+    "node-fetch": "^2.7.0",
+    "form-data": "^4.0.1"
   },
   "keywords": [
     "telegram",
@@ -18,4 +20,3 @@
   "author": "DevFlex™️,",
   "license": "MIT"
 }
-
