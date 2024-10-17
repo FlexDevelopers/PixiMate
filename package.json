@@ -1,1 +1,21 @@
+{
+  "name": "fotobot-telegram",
+  "version": "1.0.0",
+  "description": "A Telegram bot for image processing with background removal and uploads.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "node-telegram-bot-api": "^0.57.0"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "image-processing"
+  ],
+  "author": "DevFlex™️,",
+  "license": "MIT"
+}
 
