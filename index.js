@@ -47,7 +47,7 @@ bot.onText(/\/start/, async (msg) => {
     } else {
         const imagePath = 'https://ibb.co/dKPK4Mq';
         await bot.sendPhoto(chatId, imagePath, {
-            caption: "🌟 Welcome to FotoBot! Your go-to bot for image processing. \n\nSend a photo to get started!",
+            caption: "🌟 Welcome to PixiMate! Your go-to bot for image processing. \n\nSend a photo to get started!",
             reply_markup: {
                 inline_keyboard: [
                     [{ text: "🌐 Visit Website", url: "https://yourwebsite.com" }],
@@ -69,7 +69,7 @@ bot.on('callback_query', async (query) => {
             bot.sendMessage(chatId, "✅ You are verified! You can now use the bot features.");
             const imagePath = 'https://ibb.co/dKPK4Mq';
             await bot.sendPhoto(chatId, imagePath, {
-                caption: "🌟 Welcome to FotoBot! Your go-to bot for image processing. \n\nSend a photo to get started!",
+                caption: "🌟 Welcome to PixiMate! Your go-to bot for image processing. \n\nSend a photo to get started!",
                 reply_markup: {
                     inline_keyboard: [
                         [{ text: "🌐 Visit Website", url: "https://yourwebsite.com" }],
@@ -93,7 +93,7 @@ bot.on('callback_query', async (query) => {
     }
 
     if (query.data === 'about') {
-        bot.sendMessage(chatId, "ℹ️ FotoBot is designed to assist you with various image-related tasks.", { parse_mode: "Markdown" });
+        bot.sendMessage(chatId, "ℹ️ PixiMate is designed to assist you with various image-related tasks.", { parse_mode: "Markdown" });
     }
 });
 
