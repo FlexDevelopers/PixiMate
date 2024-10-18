@@ -45,7 +45,7 @@ bot.onText(/\/start/, async (msg) => {
             bot.deleteMessage(chatId, verificationMessage.message_id);
         }, 60000);
     } else {
-        const imagePath = 'https://ibb.co/dKPK4Mq';
+        const imagePath = 'https://i.ibb.co/n67kfD9/file-3.jpg';
         await bot.sendPhoto(chatId, imagePath, {
             caption: "🌟 Welcome to PixiMate! Your go-to bot for image processing. \n\nSend a photo to get started!",
             reply_markup: {
@@ -67,7 +67,7 @@ bot.on('callback_query', async (query) => {
 
         if (isMember) {
             bot.sendMessage(chatId, "✅ You are verified! You can now use the bot features.");
-            const imagePath = 'https://ibb.co/dKPK4Mq';
+            const imagePath = 'https://i.ibb.co/n67kfD9/file-3.jpg';
             await bot.sendPhoto(chatId, imagePath, {
                 caption: "🌟 Welcome to PixiMate! Your go-to bot for image processing. \n\nSend a photo to get started!",
                 reply_markup: {
@@ -93,9 +93,105 @@ bot.on('callback_query', async (query) => {
     }
 
     if (query.data === 'about') {
-        bot.sendMessage(chatId, "ℹ️ PixiMate is designed to assist you with various image-related tasks.", { parse_mode: "Markdown" });
+        const chatId = query.message.chat.id;
+      
+        const emojiCounts = {
+          smile: 100,
+          star: 588,
+          angry: 44,
+          heart: 689,
+          fire: 478,
+          laugh: 37,
+          thumbsUp: 894,
+          cool: 146,
+          party: 97
+       };
+      
+     const devflex = await bot.sendSticker(chatId, "CAACAgIAAxkBAAIBH2cRbbQQtP4j95rULH9Lmgh80L9uAAJUYQACYgiISPEbzo3A7bujNgQ", {
+
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: `😁 ${emojiCounts.smile}`, callback_data: 'emoji_smile' },
+                    { text: `🤩 ${emojiCounts.star}`, callback_data: 'emoji_star' },
+                    { text: `😡 ${emojiCounts.angry}`, callback_data: 'emoji_angry' }
+                ],
+                [
+                    { text: `❤️ ${emojiCounts.heart}`, callback_data: 'emoji_heart' },
+                    { text: `🔥 ${emojiCounts.fire}`, callback_data: 'emoji_fire' },
+                    { text: `😂 ${emojiCounts.laugh}`, callback_data: 'emoji_laugh' }
+                ],
+                [
+                    { text: `👍 ${emojiCounts.thumbsUp}`, callback_data: 'emoji_thumbsUp' },
+                    { text: `😎 ${emojiCounts.cool}`, callback_data: 'emoji_cool' },
+                    { text: `🎉 ${emojiCounts.party}`, callback_data: 'emoji_party' }
+                ]
+            ]
+        }
+    });
+  // Handle callback queries for emoji buttons
+    bot.on('callback_query', async (query) => {
+        const buttonType = query.data.split('_')[1];
+        emojiCounts[buttonType]++; // Increment the counter for the pressed button
+
+        // Update button text to show the count
+        await bot.editMessageReplyMarkup({
+            inline_keyboard: [
+                [
+                    { text: `😁 ${emojiCounts.smile}`, callback_data: 'emoji_smile' },
+                    { text: `🤩 ${emojiCounts.star}`, callback_data: 'emoji_star' },
+                    { text: `😡 ${emojiCounts.angry}`, callback_data: 'emoji_angry' }
+                ],
+                [
+                    { text: `❤️ ${emojiCounts.heart}`, callback_data: 'emoji_heart' },
+                    { text: `🔥 ${emojiCounts.fire}`, callback_data: 'emoji_fire' },
+                    { text: `😂 ${emojiCounts.laugh}`, callback_data: 'emoji_laugh' }
+                ],
+                [
+                    { text: `👍 ${emojiCounts.thumbsUp}`, callback_data: 'emoji_thumbsUp' },
+                    { text: `😎 ${emojiCounts.cool}`, callback_data: 'emoji_cool' },
+                    { text: `🎉 ${emojiCounts.party}`, callback_data: 'emoji_party' }
+                ]
+            ]
+        }, {
+            chat_id: query.message.chat.id,
+            message_id: devflex.message_id
+        });
+
+        // Acknowledge the callback query
+        bot.answerCallbackQuery(query.id);
+    });
+     
+      const aboutMessage = `
+
+🌐 <b>Welcome to DevFlex™ (Flex Developers) 🚀</b>
+
+We are <b>DevFlex™</b>, a dynamic team of developers and designers committed to delivering flexible, top-quality software solutions. We embrace challenges, drive innovation, and prioritize client satisfaction in every project.
+
+💻 <b>Our Expertise:</b>
+
+• API Development & Integration
+• Telegram & WhatsApp Bots
+• Web & Mobile App Development
+• Custom Software Solutions
+• UI/UX Design
+
+🔍 <b>Why Choose Us?</b>
+
+• Agile Approach
+• Client-Centric Solutions
+• End-to-End Support
+
+"Flexibility in Every Function." — DevFlex™
+
+<a href="https://github.com/FlexDevelopers/">🔗 Explore our GitHub</a> for more projects and collaborations.
+
+   `;
+        bot.sendMessage(chatId, aboutMessage, { parse_mode: "HTML" });
     }
 });
+  
+  
 
 // Delete non-member text messages
 bot.on('message', async (msg) => {
@@ -249,5 +345,6 @@ bot.on('callback_query', async (query) => {
 
     bot.answerCallbackQuery(query.id);
 });
+
 
 console.log("Connected");
