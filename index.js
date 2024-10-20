@@ -251,6 +251,7 @@ async function uploadToImgbb(imageURL) {
     }
 }
 
+
 // Listen for photos
 let latestPhotoFileId;
 bot.on('photo', async (msg) => {
@@ -277,7 +278,8 @@ bot.on('photo', async (msg) => {
         reply_markup: {
             inline_keyboard: [
                 [{ text: "Upload to imgbb", callback_data: "upload_imgbb" }],
-                [{ text: "Remove Background", callback_data: "remove_bg" }]
+                [{ text: "Remove Background", callback_data: "remove_bg" }],
+                [{ text: "Create Sticker", callback_data: "create_sticker" }]
             ]
         }
     };
@@ -289,7 +291,7 @@ bot.on('photo', async (msg) => {
 bot.on('callback_query', async (query) => {
     const chatId = query.message.chat.id;
     if (!latestPhotoFileId) {
-        //bot.answerCallbackQuery(query.id, { text: "⚠️ No image found! Please send a photo first.", show_alert: true });
+        bot.answerCallbackQuery(query.id, { text: "⚠️ No image found! Please send a photo first.", show_alert: true });
         return;
     }
 
@@ -324,6 +326,10 @@ bot.on('callback_query', async (query) => {
                     chat_id: chatId,
                     message_id: msg.message_id,
                     parse_mode: "Markdown"
+                }).then(() => {
+                    setTimeout(() => {
+                        bot.deleteMessage(chatId, msg.message_id);
+                    }, 5000); // Delete after 5 seconds
                 });
 
                 await bot.sendDocument(chatId, outputFilePath, {
@@ -335,6 +341,43 @@ bot.on('callback_query', async (query) => {
             } catch (error) {
                 console.error('Error processing the image:', error.message);
                 bot.editMessageText('*⚠️ Failed to remove the background. Please try again later.*', {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown"
+                });
+            }
+        });
+    } else if (query.data === "create_sticker") {
+        bot.sendMessage(chatId, "*🛠️ Creating sticker...*", { parse_mode: "Markdown" }).then(async (msg) => {
+            try {
+                const stickerFilePath = 'sticker.webp';
+                
+                // Download the file and convert to WebP format
+                const response = await fetch(fileLink);
+                const buffer = await response.buffer();
+                fs.writeFileSync(stickerFilePath, buffer);
+
+                // Send the sticker
+                await bot.sendSticker(chatId, stickerFilePath, {
+                    reply_markup: {
+                        inline_keyboard: [[{ text: "🌟 Sticker Created!", callback_data: "sticker_done" }]]
+                    }
+                });
+
+                // Clean up the file after sending
+                fs.unlinkSync(stickerFilePath);
+                bot.editMessageText('*✅ Sticker created!*', {
+                    chat_id: chatId,
+                    message_id: msg.message_id,
+                    parse_mode: "Markdown"
+                }).then(() => {
+                    setTimeout(() => {
+                        bot.deleteMessage(chatId, msg.message_id);
+                    }, 5000); // Delete after 5 seconds
+                });
+            } catch (error) {
+                console.error('Error creating the sticker:', error.message);
+                bot.editMessageText('*⚠️ Failed to create the sticker. Please try again later.*', {
                     chat_id: chatId,
                     message_id: msg.message_id,
                     parse_mode: "Markdown"
