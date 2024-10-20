@@ -291,7 +291,7 @@ bot.on('photo', async (msg) => {
 bot.on('callback_query', async (query) => {
     const chatId = query.message.chat.id;
     if (!latestPhotoFileId) {
-        bot.answerCallbackQuery(query.id, { text: "⚠️ No image found! Please send a photo first.", show_alert: true });
+       // bot.answerCallbackQuery(query.id, { text: "⚠️ No image found! Please send a photo first.", show_alert: true });
         return;
     }
 
