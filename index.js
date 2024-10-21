@@ -67,9 +67,9 @@ bot.on('callback_query', async (query) => {
         const isMember = await isUserInChannel(chatId);
 
         if (isMember) {
-            bot.sendMessage(chatId, "✅ You are verified! You can now use the bot features.");
+            bot.sendMessage(chatId, "✅ You are verified! You can now use the bot features.").then(() => {
             const imagePath = 'https://i.ibb.co/n67kfD9/file-3.jpg';
-            await bot.sendPhoto(chatId, imagePath, {
+            bot.sendPhoto(chatId, imagePath, {
                 caption: "🌟 Welcome to PixiMate! Your go-to bot for image processing. \n\nSend a photo to get started!",
                 reply_markup: {
                     inline_keyboard: [
@@ -78,6 +78,7 @@ bot.on('callback_query', async (query) => {
                         [{ text: "ℹ️ About", callback_data: 'about' }]
                     ]
                 }
+            });
             });
             bot.deleteMessage(chatId, query.message.message_id);
         } else {
@@ -421,6 +422,7 @@ bot.onText(/\/pixels(.*)/, async (msg, match) => {
     currentQuery = query;
     currentPage = 1; // Reset to first page
     currentImageIndex = 0; // Reset to the first image in the batch
+    currentMessageId = null; // Reset message ID for a new message
 
     try {
         await fetchAndSendImage(chatId, currentQuery, currentPage, currentImageIndex);
