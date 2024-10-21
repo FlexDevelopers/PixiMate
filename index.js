@@ -16,7 +16,7 @@ const REMOVE_BG_API_KEY = process.env.RMBG_API_KEY;
 const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
 
 setInterval(() => {
-  require('http').get('https://your-glitch-project-name.glitch.me');
+  require('http').get('https://walnut-childish-brain.glitch.me');
 }, 280000); // Sends a request every ~4.6 minutes
 
 // Function to check if the user is a member of the channel
