@@ -1,4 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const FormData = require('form-data');
@@ -387,6 +388,136 @@ bot.on('callback_query', async (query) => {
     }
 
     bot.answerCallbackQuery(query.id);
+});
+
+const PIXELS_API_KEY = 'Dlq0ek4Oew4C27fRq8rBgeW4iEzP1mn10MhffdTB4wU7YAp6rZn8HGh8'; // Replace with your actual Pexels API key
+const imagesPerPage = 10; // Fetch 10 images at a time
+
+let currentImages = [];
+let currentPage = 1;
+let currentQuery = '';
+let currentImageIndex = 0;
+let currentMessageId = null;
+
+bot.onText(/\/pixels(.*)/, async (msg, match) => {
+    const chatId = msg.chat.id;
+    const query = match[1].trim(); // Get the query from the command
+
+    // Check if the user is a member of the channel
+    const isMember = await isUserInChannel(chatId);
+    if (!isMember) {
+        bot.deleteMessage(chatId, msg.message_id);
+        const warningMessage = await bot.sendMessage(chatId, "⚠️ You must join our Telegram channel to use this bot.");
+        setTimeout(() => {
+            bot.deleteMessage(chatId, warningMessage.message_id);
+        }, 5000);
+      return ;
+    }
+
+    if (!query || query === '') {
+        return bot.sendMessage(chatId, 'Please provide a search query like this: /pixels <query>');
+    }
+
+    currentQuery = query;
+    currentPage = 1; // Reset to first page
+    currentImageIndex = 0; // Reset to the first image in the batch
+
+    try {
+        await fetchAndSendImage(chatId, currentQuery, currentPage, currentImageIndex);
+    } catch (error) {
+        console.error('Error fetching images:', error);
+        bot.sendMessage(chatId, 'Error fetching images from Pexels. Please try again later.');
+    }
+});
+
+async function fetchAndSendImage(chatId, query, page, index) {
+    try {
+        if (index === 0 || currentImages.length === 0) {
+            // Fetch new batch of images if index is 0 or no images are stored
+            const response = await axios.get('https://api.pexels.com/v1/search', {
+                headers: {
+                    Authorization: PIXELS_API_KEY,
+                },
+                params: {
+                    query: query,
+                    per_page: imagesPerPage,
+                    page: page,
+                },
+            });
+
+            currentImages = response.data.photos;
+
+            if (currentImages.length === 0) {
+                return bot.sendMessage(chatId, 'No images found for this query.');
+            }
+        }
+
+        // Send or edit the current image
+        await sendOrEditImage(chatId, currentImages[index], page, index);
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function sendOrEditImage(chatId, image, page, index) {
+    const caption = `${image.alt}\nPhoto by ${image.photographer} on Pexels\n(Page ${page},Image ${index + 1}/${imagesPerPage})`;
+
+    const options = {
+        chat_id: chatId,
+        message_id: currentMessageId,
+        reply_markup: {
+            inline_keyboard: [
+                [
+                    { text: '⏮️ Previous', callback_data: 'previous' },
+                    { text: 'Next ⏭️', callback_data: 'next' }
+                ]
+            ]
+        }
+    };
+
+    const media = {
+        type: 'photo',
+        media: image.src.medium,
+        caption: caption
+    };
+
+    if (currentMessageId) {
+        // Edit the existing message
+        await bot.editMessageMedia(media, options);
+    } else {
+        // Send a new message and save the message ID
+        const sentMessage = await bot.sendPhoto(chatId, image.src.medium, { caption, ...options });
+        currentMessageId = sentMessage.message_id;
+    }
+}
+
+bot.on('callback_query', async (callbackQuery) => {
+    const chatId = callbackQuery.message.chat.id;
+    const data = callbackQuery.data;
+
+    if (data === 'next') {
+        currentImageIndex++;
+        if (currentImageIndex >= currentImages.length) {
+            // Move to the next page if end of batch is reached
+            currentImageIndex = 0;
+            currentPage++;
+        }
+    } else if (data === 'previous') {
+        currentImageIndex--;
+        if (currentImageIndex < 0) {
+            // Move to the previous page if start of batch is reached
+            currentImageIndex = imagesPerPage - 1;
+            currentPage = Math.max(1, currentPage - 1);
+        }
+    }
+
+    try {
+        await fetchAndSendImage(chatId, currentQuery, currentPage, currentImageIndex);
+        await bot.answerCallbackQuery(callbackQuery.id);
+    } catch (error) {
+        console.error('Error fetching images:', error);
+        //bot.sendMessage(chatId, 'Error fetching images from Pexels. Please try again later.');
+    }
 });
 
 
