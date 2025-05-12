@@ -11,7 +11,7 @@ PixiMate: A Telegram bot for image processing, including background removal and 
 ## ⚙️ Tech Stack
 
 <p align="left">
-  <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
+  <img src="https://img.shields.io/badge/javascript-yellow?style=for-the-badge&logo=javascript&logoColor=white" />
 </p>
 
 ## 🛠️ Getting Started
