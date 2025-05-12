@@ -18,8 +18,8 @@ PixiMate: A Telegram bot for image processing, including background removal and 
 
 ```bash
 # Clone the repo
-git clone https://github.com/FlexDevelopers/PixiMate/edit/main/README.md
-cd login-signup-ui
+git clone https://github.com/FlexDevelopers/PixiMate.git
+cd PixiMate
 
 # Install dependencies
 npm install
